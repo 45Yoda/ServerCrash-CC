@@ -1,39 +1,49 @@
 import socket
 import time
+import json
+import config
 
-MCAST_GRP = "239.8.8.8"
-MCAST_PORT = 8888
+class MonitorUDP:
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 8888
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET,
+                                  socket.SOCK_DGRAM,
+                                  socket.IPPROTO_UDP)
 
+        self.start = time.time()
+        self.probe()
 
+        self.sock = socket.socket(socket.AF_INET,
+                                  socket.SOCK_DGRAM)
+        self.sock.settimeout(5)
+        self.sock.bind(config.udp_group)
 
-def probe():
-    sock = socket.socket(socket.AF_INET,
-                         socket.SOCK_DGRAM,
-                         socket.IPPROTO_UDP)
-
-    sock.setsockopt(socket.IPPROTO_IP,socket.IP_MULTICAST_TTL,2)
-    sock.sendto("Hello, World!",(MCAST_GRP,MCAST_PORT))
-
-
-def listenAnswer():
-    sock = socket.socket(socket.AF_INET,
-                         socket.SOCK_DGRAM)
-    sock.bind((UDP_IP,UDP_PORT))
-
-    while True:
-        data = sock.recvfrom(1024)
-        end = time.time()
-        what = end-start
-        
-        print "WHUT: " + str(what), data
+        self.listenAnswer()
 
 
 
+    def probe(self):
 
-start = time.time()
-probe()
+        message ='Hello, World!'
+        #sock.setsockopt(socket.IPPROTO_IP,socket.IP_MULTICAST_TTL,2)
+        self.sock.sendto(message.encode('utf-8'),config.mcast_group)
 
-listenAnswer()
+
+    def listenAnswer(self):
+
+        while True:
+            try:
+                data, addr = self.sock.recvfrom(1024)
+                end = time.time()
+                what = end-self.start
+                parsed = json.loads(data)
+                print ('Time: ' + str(what))
+                print ( json.dumps(parsed,indent=2))
+                print('Address: %s' % (addr,))
+            except socket.timeout:
+                break
+
+def main():
+    MonitorUDP()
+
+main()

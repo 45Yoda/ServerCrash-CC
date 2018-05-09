@@ -1,59 +1,49 @@
 import socket
 import struct
 import time
-import subprocess
-import re
+import json
+import calcs
+import config
 
-MCAST_GRP = "239.8.8.8"
-MCAST_PORT = 8888
+class AgenteUDP:
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 8888
-
-def listen():
-    sock = socket.socket(socket.AF_INET,
-                        socket.SOCK_DGRAM,
-                        socket.IPPROTO_UDP)
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET,
+                                  socket.SOCK_DGRAM,
+                                  socket.IPPROTO_UDP)
 
 
-    sock.setsockopt(socket.SOL_SOCKET,
-                    socket.SO_REUSEADDR,1)
+        self.sock.setsockopt(socket.SOL_SOCKET,
+                             socket.SO_REUSEADDR,1)
 
-    sock.bind((MCAST_GRP,MCAST_PORT))
-
-
-    mreq = struct.pack("4sl",
-                       socket.inet_aton(MCAST_GRP),
-                       socket.INADDR_ANY)
-
-    sock.setsockopt(socket.IPPROTO_IP,
-                    socket.IP_ADD_MEMBERSHIP,
-                    mreq)
-
-    while True:
-        print (sock.recv(1024))
-        time.sleep(3)
-        resp()
+        self.sock.bind(config.mcast_group)
 
 
+        mreq = struct.pack("4sl",
+                            socket.inet_aton(config.MCAST_GRP),
+                            socket.INADDR_ANY)
 
-def resp():
-    sock = socket.socket(socket.AF_INET,
-                         socket.SOCK_DGRAM)
-    answer = memAv() + load()
-    sock.sendto(answer,(UDP_IP,UDP_PORT))
+        self.sock.setsockopt(socket.IPPROTO_IP,
+                             socket.IP_ADD_MEMBERSHIP,
+                             mreq)
+        self.listen()
 
-def memAv():
-    out = subprocess.check_output("free -m",shell=True)
-    lol = re.findall("Mem:\s{1,}.*\s{1,}([0-9].*)",out)
+    def listen(self):
 
-    return "Mem Available: " + lol[0]
+        while True:
+            print (self.sock.recv(1024).decode())
+            time.sleep(3)
+            self.resp()
 
-def load():
-    out = subprocess.check_output("uptime",shell=True)
-    lol = re.findall("[0-9]\.[0-9].+",out);
+    def resp(self):
+        self.sock = socket.socket(socket.AF_INET,
+                                  socket.SOCK_DGRAM)
+        answer = {'memAvailable': calcs.memAv(),
+                  'Load': calcs.load(),
+                 }
+        self.sock.sendto(json.dumps(answer).encode("utf-8"),config.udp_group)
 
-    return "Load: " + lol[0]
+def main():
+    AgenteUDP()
 
-
-listen()
+main()
