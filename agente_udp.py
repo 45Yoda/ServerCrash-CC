@@ -1,6 +1,8 @@
 import socket
 import struct
 import time
+import subprocess
+import re
 
 MCAST_GRP = "239.8.8.8"
 MCAST_PORT = 8888
@@ -30,7 +32,7 @@ def listen():
 
     while True:
         print (sock.recv(1024))
-        time.sleep(10)
+        time.sleep(3)
         resp()
 
 
@@ -38,6 +40,20 @@ def listen():
 def resp():
     sock = socket.socket(socket.AF_INET,
                          socket.SOCK_DGRAM)
-    sock.sendto("Hello mah Friend!",(UDP_IP,UDP_PORT))
+    answer = memAv() + load()
+    sock.sendto(answer,(UDP_IP,UDP_PORT))
+
+def memAv():
+    out = subprocess.check_output("free -m",shell=True)
+    lol = re.findall("Mem:\s{1,}.*\s{1,}([0-9].*)",out)
+
+    return "Mem Available: " + lol[0]
+
+def load():
+    out = subprocess.check_output("uptime",shell=True)
+    lol = re.findall("[0-9]\.[0-9].+",out);
+
+    return "Load: " + lol[0]
+
 
 listen()
