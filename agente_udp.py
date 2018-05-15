@@ -5,45 +5,49 @@ import json
 import calcs
 import config
 
-class AgenteUDP:
+#class AgenteUDP:
 
-    def __init__(self):
-        self.sock = socket.socket(socket.AF_INET,
-                                  socket.SOCK_DGRAM,
-                                  socket.IPPROTO_UDP)
+#    def __init__(self):
 
-
-        self.sock.setsockopt(socket.SOL_SOCKET,
-                             socket.SO_REUSEADDR,1)
-
-        self.sock.bind(config.mcast_group)
+def listen():
+    sock = socket.socket(socket.AF_INET,
+                         socket.SOCK_DGRAM,
+                         socket.IPPROTO_UDP)
 
 
-        mreq = struct.pack("4sl",
-                            socket.inet_aton(config.MCAST_GRP),
-                            socket.INADDR_ANY)
+    sock.setsockopt(socket.SOL_SOCKET,
+                    socket.SO_REUSEADDR,1)
 
-        self.sock.setsockopt(socket.IPPROTO_IP,
-                             socket.IP_ADD_MEMBERSHIP,
-                             mreq)
-        self.listen()
+    sock.bind(config.mcast_group)
 
-    def listen(self):
 
-        while True:
-            print (self.sock.recv(1024).decode())
-            time.sleep(3)
-            self.resp()
+    mreq = struct.pack("4sl",
+                        socket.inet_aton(config.MCAST_GRP),
+                        socket.INADDR_ANY)
 
-    def resp(self):
-        self.sock = socket.socket(socket.AF_INET,
-                                  socket.SOCK_DGRAM)
-        answer = {'memAvailable': calcs.memAv(),
-                  'Load': calcs.load(),
-                 }
-        self.sock.sendto(json.dumps(answer).encode("utf-8"),config.udp_group)
+    sock.setsockopt(socket.IPPROTO_IP,
+                    socket.IP_ADD_MEMBERSHIP,
+                    mreq)
 
-def main():
-    AgenteUDP()
+    while True:
+        print (sock.recv(1024).decode())
+        time.sleep(3)
+        resp()
 
-main()
+def resp():
+    sock = socket.socket(socket.AF_INET,
+                         socket.SOCK_DGRAM)
+
+    answer = {'memAvailable': calcs.memAv(),
+              'Load': calcs.load(),
+             }
+
+    sock.sendto(json.dumps(answer).encode("utf-8"),config.udp_group)
+
+
+listen()
+
+#def main():
+#    AgenteUDP()
+
+#main()
