@@ -14,7 +14,10 @@ class AgentUDP:
                                     socket.SOCK_DGRAM,
                                     socket.IPPROTO_UDP)
 
-        self.socket.bind(("",config.MCAST_PORT))
+        self.socket.setsockopt(socket.SOL_SOCKET,
+                               socket.SO_REUSEADDR, 1)
+
+        self.socket.bind(("", config.MCAST_PORT))
         mreq = struct.pack("4sl",
                            socket.inet_aton(config.MCAST_GRP),
                            socket.INADDR_ANY)
@@ -38,7 +41,8 @@ class AgentUDP:
 
 def resp(addr):
 
-    answer = {'Mem_Available': calcs.memAv(),
+    answer = {'Type': 'response',
+              'Mem_Available': calcs.memAv(),
               'Load': calcs.load(),
               'IP_Addr': addr[0],
               'Port': addr[1]

@@ -1,12 +1,12 @@
 import config
 
 
-class Table:
+class StatTable:
 
     def __init__(self):
         self.dict = {}
 
-    def order(self,msg,time):
+    def order(self, msg, time):
         for key in self.dict:
             if self.dict[key]['IP'] == msg['IP']:
                 del self.dict[key]
