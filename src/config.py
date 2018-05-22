@@ -1,0 +1,11 @@
+MCAST_GRP = "239.8.8.8"
+MCAST_PORT = 8888
+
+mcast_group = (MCAST_GRP,MCAST_PORT)
+
+UDP_IP = "127.0.0.1"
+UDP_PORT = 8888
+
+udp_group = (UDP_IP,UDP_PORT)
+
+factor = 0.4555127
