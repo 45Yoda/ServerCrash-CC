@@ -5,9 +5,6 @@ import time
 import json
 from src import calcs, config
 
-#self.socket.setsockopt(socket.SOL_SOCKET,
-#                   socket.SO_REUSEADDR, 1)
-
 
 class AgentUDP:
 
@@ -17,7 +14,7 @@ class AgentUDP:
                                     socket.SOCK_DGRAM,
                                     socket.IPPROTO_UDP)
 
-        self.socket.bind(config.mcast_group)
+        self.socket.bind(("",config.MCAST_PORT))
         mreq = struct.pack("4sl",
                            socket.inet_aton(config.MCAST_GRP),
                            socket.INADDR_ANY)
@@ -35,10 +32,11 @@ class AgentUDP:
 
             if dt['Type'] == 'request':
                 time.sleep(self.hold)
-                resp(self, addr)
+                answer = resp(addr)
+                self.socket.sendto(json.dumps(answer).encode("utf-8"), addr)
 
 
-def resp(self, addr):
+def resp(addr):
 
     answer = {'Mem_Available': calcs.memAv(),
               'Load': calcs.load(),
@@ -46,7 +44,7 @@ def resp(self, addr):
               'Port': addr[1]
              }
 
-    self.socket.sendto(json.dumps(answer).encode("utf-8"), ("localhost",8888))
+    return answer
 
 
 def main():
