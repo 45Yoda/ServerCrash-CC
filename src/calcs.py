@@ -9,6 +9,6 @@ def memAv():
 
 def load():
     out = subprocess.check_output("uptime",shell=True)
-    lol = re.findall("[0-9]\.[0-9].+",out.decode());
+    lol = re.findall("[0-9]\.[0-9]+",out.decode());
 
-    return lol[0]
+    return lol[2]

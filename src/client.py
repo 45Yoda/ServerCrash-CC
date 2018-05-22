@@ -5,7 +5,7 @@ from threading import Thread
 
 class ClientThread(Thread):
 
-    def __init__(self,client_socket,agent_ip):
+    def __init__(self, client_socket, agent_ip):
 
         Thread.__init__(self)
         self.client_socket = client_socket

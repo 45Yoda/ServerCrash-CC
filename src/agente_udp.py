@@ -9,7 +9,7 @@ from src import calcs, config
 class AgentUDP:
 
     def __init__(self):
-        self.hold = random.randint(0,10)
+        self.hold = random.randint(0, 10)
         self.socket = socket.socket(socket.AF_INET,
                                     socket.SOCK_DGRAM,
                                     socket.IPPROTO_UDP)
@@ -29,12 +29,13 @@ class AgentUDP:
 
     def listen(self):
         while True:
+            print("Waiting request")
             data, addr = self.socket.recvfrom(1024)
             dt = json.loads(data.decode())
             print(dt)
 
             if dt['Type'] == 'request':
-                time.sleep(self.hold)
+                time.sleep(self.hold * 0.01)
                 answer = resp(addr)
                 self.socket.sendto(json.dumps(answer).encode("utf-8"), addr)
 
