@@ -14,7 +14,7 @@ def main():
     threads = []
 
     while True:
-        tcp.listen(80)
+        tcp.listen(30)
         print("TCP listening")
         (client_socket, (ip, port)) = tcp.accept()
         print("Communication received")

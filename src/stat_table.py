@@ -8,6 +8,7 @@ class StatTable:
         self.dict = {}
 
     def order(self, msg, time):
+
         for key in self.dict:
             if self.dict[key]['IP_Addr'] == msg['IP_Addr']:
                 del self.dict[key]

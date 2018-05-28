@@ -11,8 +11,7 @@ class AgentUDP:
     def __init__(self):
         self.hold = random.randint(0, 10)
         self.socket = socket.socket(socket.AF_INET,
-                                    socket.SOCK_DGRAM,
-                                    socket.IPPROTO_UDP)
+                                    socket.SOCK_DGRAM)
 
         self.socket.setsockopt(socket.SOL_SOCKET,
                                socket.SO_REUSEADDR, 1)

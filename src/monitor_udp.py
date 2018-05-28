@@ -10,8 +10,7 @@ class MonitorUDP:
         self.start = time.time()
         self.table = stat_table
         self.socket = socket.socket(socket.AF_INET,
-                                    socket.SOCK_DGRAM,
-                                    socket.IPPROTO_UDP)
+                                    socket.SOCK_DGRAM)
 
         t1 = Thread(target=self.probe)
         t2 = Thread(target=self.listen_answer)
@@ -24,7 +23,7 @@ class MonitorUDP:
         while True:
             print("Probing Agents")
             self.start = time.time()
-            self.socket.sendto(bytes(json.dumps({"Type": 'request'}), "utf-8"), ("localhost", 8888)) #config.mcast_group
+            self.socket.sendto(bytes(json.dumps({"Type": 'request'}), "utf-8"), ("239.8.8.8", 8888)) #config.mcast_group
 
             print("Probe sent")
             time.sleep(5)
