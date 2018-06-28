@@ -10,7 +10,7 @@ def main():
     mon = MonitorUDP(stat)
     tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    tcp.bind(('localhost', 8000))
+    tcp.bind(('localhost', 8003))
     threads = []
 
     while True:

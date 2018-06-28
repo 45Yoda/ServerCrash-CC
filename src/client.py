@@ -12,7 +12,7 @@ class ClientThread(Thread):
         self.agent_ip = agent_ip
         self.agent_socket = socket.socket(socket.AF_INET,
                                           socket.SOCK_STREAM)
-        self.agent_socket.connect((self.agent_ip, 8001))
+        self.agent_socket.connect((self.agent_ip, 8008))
 
     def run(self):
 
